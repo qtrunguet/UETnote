@@ -11,7 +11,7 @@ var con = mysql.createConnection({
     host: "localhost",
     user: "root",
     password: "qt",
-    database: "thuctap"
+    database: "thuctap_notepad"
 })
 
 con.connect(function(err){
@@ -47,7 +47,7 @@ app.post("/login", urlencodedParser, function(req, res){
         //console.log(rows);
         if (rows[0] != null){
             res.redirect(url.format({
-                pathname:"list",
+                pathname:"dashboard",
                 query:{
                     "u": u,
                     "id": rows[0].id
@@ -60,43 +60,9 @@ app.post("/login", urlencodedParser, function(req, res){
     })
 })
 
-app.get("/list",function(req,res){
-    var id = 14
-    var username = "Quang Trung"
+app.get("/dashboard", function(req, res){
+    var id = req.query.id
     var queryString = 'SELECT * FROM data WHERE id='+con.escape(id)
-    var text = []
-    con.query(queryString,function(err,rows,fields){
-        if (err) throw err
-        var length = rows.length
-        //console.log("leng:"+length)
-        //console.log(rows)
-        for(i=0;i<length;i++){
-             text[i] = rows[i].textdata.substring(0,10)
-        }
-        res.render("list",{
-            username: username,
-            list: rows,
-            text: text,
-            length: length,
-            id: id
-        })
-    })
-})
-
-app.post("/list",urlencodedParser, function(req,res){
-    var stt= req.body.stt;
-    stt =1;
-    res.redirect(url.format({
-        pathname:"dashboard/stt",
-        query:{
-            "stt": stt
-        }
-    }))
-})
-
-app.get("/dashboard/:stt", function(req, res){
-    var stt = req.query.stt
-    var queryString = 'SELECT * FROM data WHERE stt='+con.escape(stt)
     var textdata="";
     con.query(queryString, function(err, rows, fields){
         if (err) throw err
@@ -143,23 +109,10 @@ app.post("/register", urlencodedParser,function(req, res){
         if(err) throw err
        // res.redirect("/login")
     })
-    var id =0
-    queryString = 'SELECT * FROM login WHERE username='+ con.escape(u) +' AND password=' + con.escape(p)
-    con.query(queryString, function(err, rows, fields){
-        if (err) throw err;
-        //console.log(rows);
-        if (rows[0] != null){
-            id = rows[0].id
-            console.log(' id register la: '+id)
-            var cach = ''
-            queryString2 = 'INSERT INTO data (id) VALUES ('+con.escape(id)+')'
-            con.query(queryString2, function(err){
-                if(err) throw err
-                res.redirect("/login")
-            })
-        }
-        else{
-            console.log("loi phan register doc du lieu")
-        }
+    var cach = ' '
+    var queryString = 'INSERT INTO data (textdata) VALUES ('+con.escape(cach)+')'
+    con.query(queryString, function(err){
+        if(err) throw err
+        res.redirect("/login")
     })
 })
